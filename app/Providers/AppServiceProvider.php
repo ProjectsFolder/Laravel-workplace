@@ -3,9 +3,12 @@
 namespace App\Providers;
 
 use App\Model\Interfaces\VatSaverInterface;
+use App\Model\Repository\LogRepository;
 use App\Model\Repository\VatRepository;
 use App\Rules\Vat;
+use App\Service\Interfaces\RabbitClientInterface;
 use App\Service\Interfaces\VatGetterInterface;
+use App\Service\RabbitClient;
 use App\Service\VIES;
 use App\Utils\Paginator;
 use Illuminate\Contracts\Validation\Rule;
@@ -44,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(VatRepository::class, function () use ($vatRepository) {
             return $vatRepository;
+        });
+        $this->app->singleton(RabbitClientInterface::class, function () {
+            return new RabbitClient(env('RABBIT_URL'));
+        });
+        $this->app->singleton(LogRepository::class, function () {
+            return new LogRepository();
         });
     }
 

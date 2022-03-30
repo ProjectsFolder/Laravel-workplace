@@ -13,6 +13,7 @@
         "ext-soap": "*",
         "doctrine/annotations": "^1.13",
         "doctrine/dbal": "^3.3",
+        "enqueue/amqp-lib": "^0.10.9",
         "fideloper/proxy": "^4.4",
         "laravel/framework": "^6.20.26",
         "laravel/tinker": "^2.5",
