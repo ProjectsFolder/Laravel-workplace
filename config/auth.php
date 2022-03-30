@@ -46,6 +46,11 @@ return [
             'provider' => 'external',
             //'hash' => false,
         ],
+
+        'custom' => [
+            'driver' => 'json',
+            'provider' => 'external',
+        ],
     ],
 
     /*

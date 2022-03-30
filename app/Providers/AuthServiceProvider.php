@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
+use App\Service\Auth\JsonGuard;
+use Illuminate\Auth\AuthManager;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,13 +20,23 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register any authentication / authorization services.
      *
+     * @param AuthManager $auth
+     *
      * @return void
      */
-    public function boot()
+    public function boot(AuthManager $auth)
     {
         $this->registerPolicies();
-        Auth::provider('external', function ($app, array $config) {
+        $this->registerAuth($auth);
+    }
+
+    private function registerAuth(AuthManager $auth)
+    {
+        $auth->provider('external', function ($app, array $config) {
             return new ExternalUserProvider();
+        });
+        $auth->extend('json', function ($app, $name, array $config) use ($auth) {
+            return new JsonGuard($auth->createUserProvider($config['provider']), $app->make('request'));
         });
     }
 }
