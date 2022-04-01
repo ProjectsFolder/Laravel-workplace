@@ -5,12 +5,14 @@ namespace App\Console\Commands;
 use App\Model\Repository\LogRepository;
 use App\Service\Interfaces\RabbitClientInterface;
 use Illuminate\Console\Command;
+use Illuminate\Redis\RedisManager;
 use Interop\Queue\Consumer;
 
 class RabbitReceiverCommand extends Command
 {
     private $rabbitClient;
     private $logRepository;
+    private $redis;
 
     /**
      * The name and signature of the console command.
@@ -31,12 +33,14 @@ class RabbitReceiverCommand extends Command
      *
      * @param RabbitClientInterface $rabbitClient
      * @param LogRepository $logRepository
+     * @param RedisManager $redis
      */
-    public function __construct(RabbitClientInterface $rabbitClient, LogRepository $logRepository)
+    public function __construct(RabbitClientInterface $rabbitClient, LogRepository $logRepository, RedisManager $redis)
     {
         parent::__construct();
         $this->rabbitClient = $rabbitClient;
         $this->logRepository = $logRepository;
+        $this->redis = $redis;
     }
 
     /**
@@ -44,12 +48,13 @@ class RabbitReceiverCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
+        $this->redis->set('rabbit_receive_enable', true);
         /** @var Consumer $consumer */
         $consumer = $this->rabbitClient->createConsumer($this->option('exchange'));
-        while (true) {
-            $message = $consumer->receive();
+        while (!empty($this->redis->get('rabbit_receive_enable', false))) {
+            $message = $consumer->receive(5000);
             if (!empty($message)) {
                 $consumer->acknowledge($message);
                 $message = $message->getBody();
@@ -58,5 +63,7 @@ class RabbitReceiverCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 }
