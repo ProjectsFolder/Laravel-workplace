@@ -53,8 +53,6 @@ class Handler extends ExceptionHandler
      * @param Exception $e
      *
      * @return Response
-     *
-     * @throws Exception
      */
     public function render($request, Exception $e): Response
     {
