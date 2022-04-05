@@ -6,12 +6,12 @@ use App\Model\Entity\Log;
 
 class LogRepository
 {
-    public function create(string $message): Log
+    public function store(string $message): int
     {
         $log = new Log();
         $log->message = $message;
         $log->save();
 
-        return $log;
+        return $log->id;
     }
 }

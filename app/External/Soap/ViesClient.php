@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Service;
+namespace App\External\Soap;
 
+use App\Domain\Entity\Vat\VatData;
+use App\Domain\Interfaces\Output\VatGetterInterface;
 use App\Utils\PropertyFiller;
-use App\Model\Dto\VatData;
-use App\Service\Interfaces\VatGetterInterface;
-use Exception;
 use ReflectionException;
 use SoapClient;
 
-class VIES implements VatGetterInterface
+class ViesClient implements VatGetterInterface
 {
     private $client;
 
@@ -25,10 +24,10 @@ class VIES implements VatGetterInterface
      *
      * @throws ReflectionException
      */
-    public function get(string $vat): VatData
+    public function get(string $vat): ?VatData
     {
         if (!preg_match('/^([A-Z]{2})([0-9]*)$/u', $vat, $matches)) {
-            throw new Exception('Invalid VatData format');
+            return null;
         }
         /** @noinspection PhpUndefinedMethodInspection */
         $response = $this->client->checkVat([

@@ -5,6 +5,9 @@ namespace App\Model\Entity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property mixed id
+ */
 class Vat extends Model
 {
     use SoftDeletes;

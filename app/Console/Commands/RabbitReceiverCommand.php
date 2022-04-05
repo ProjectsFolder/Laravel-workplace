@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Interfaces\Input\VatSaverInterface;
+use App\External\Interfaces\RabbitClientInterface;
 use App\Model\Repository\LogRepository;
-use App\Service\Interfaces\RabbitClientInterface;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Redis\RedisManager;
 use Interop\Queue\Consumer;
@@ -11,6 +13,7 @@ use Interop\Queue\Consumer;
 class RabbitReceiverCommand extends Command
 {
     private $rabbitClient;
+    private $vatSaver;
     private $logRepository;
     private $redis;
 
@@ -32,13 +35,19 @@ class RabbitReceiverCommand extends Command
      * Create a new command instance.
      *
      * @param RabbitClientInterface $rabbitClient
+     * @param VatSaverInterface $vatSaver
      * @param LogRepository $logRepository
      * @param RedisManager $redis
      */
-    public function __construct(RabbitClientInterface $rabbitClient, LogRepository $logRepository, RedisManager $redis)
-    {
+    public function __construct(
+        RabbitClientInterface $rabbitClient,
+        VatSaverInterface $vatSaver,
+        LogRepository $logRepository,
+        RedisManager $redis
+    ) {
         parent::__construct();
         $this->rabbitClient = $rabbitClient;
+        $this->vatSaver = $vatSaver;
         $this->logRepository = $logRepository;
         $this->redis = $redis;
     }
@@ -50,20 +59,33 @@ class RabbitReceiverCommand extends Command
      */
     public function handle(): int
     {
+        $reconnect = false;
         $this->redis->set('rabbit_receive_enable', true);
-        /** @var Consumer $consumer */
-        $consumer = $this->rabbitClient->createConsumer($this->option('exchange'));
-        while (!empty($this->redis->get('rabbit_receive_enable', false))) {
-            $message = $consumer->receive(5000);
-            if (!empty($message)) {
-                $consumer->acknowledge($message);
-                $message = $message->getBody();
-                if (!empty($message)) {
-                    $this->logRepository->create($message);
+        while (true) {
+            try {
+                if ($reconnect) {
+                    $this->rabbitClient->reconnect();
+                    $reconnect = false;
                 }
+                /** @var Consumer $consumer */
+                $consumer = $this->rabbitClient->createConsumer($this->option('exchange'));
+                while (!empty($this->redis->get('rabbit_receive_enable', false))) {
+                    $message = $consumer->receive(5000);
+                    if (!empty($message)) {
+                        $data = $message->getBody();
+                        if (!empty($data)) {
+                            $this->vatSaver->saveVat($data);
+                            $this->logRepository->store($data);
+                            $this->info($data);
+                        }
+                        $consumer->acknowledge($message);
+                    }
+                }
+            } catch (Exception $ignored) {
+                $reconnect = true;
+                $this->error($ignored->getMessage());
+                sleep(5);
             }
         }
-
-        return 0;
     }
 }

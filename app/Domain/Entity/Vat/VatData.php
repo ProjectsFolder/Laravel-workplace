@@ -1,21 +1,16 @@
 <?php
 
-namespace App\Model\Dto;
+namespace App\Domain\Entity\Vat;
 
 use JsonSerializable;
 
 class VatData implements JsonSerializable
 {
     private $countryCode;
-
     private $vatNumber;
-
     private $requestDate;
-
     private $valid;
-
     private $name;
-
     private $address;
 
     /**

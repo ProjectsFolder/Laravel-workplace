@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Service\Auth\JsonGuard;
+use App\Infrastructure\JsonGuard;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 

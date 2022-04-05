@@ -2,15 +2,15 @@
 
 namespace App\Model\Repository;
 
+use App\Domain\Entity\Vat\VatData;
+use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Http\Requests\VatRequest;
-use App\Model\Dto\VatData;
 use App\Model\Entity\Vat;
-use App\Model\Interfaces\VatSaverInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class VatRepository implements VatSaverInterface
 {
-    public function store(VatData $data): Vat
+    public function store(VatData $data): int
     {
         $vat = new Vat();
         $vat->fill([
@@ -23,14 +23,12 @@ class VatRepository implements VatSaverInterface
         ]);
         $vat->save();
 
-        return $vat;
+        return $vat->id;
     }
 
     public function list(int $perPage = 10): LengthAwarePaginator
     {
-        $pager = Vat::query()->paginate($perPage);
-
-        return $pager;
+        return Vat::query()->paginate($perPage);
     }
 
     public function get(int $id): ?Vat

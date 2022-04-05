@@ -2,14 +2,14 @@
 
 namespace App\Providers;
 
-use App\Model\Interfaces\VatSaverInterface;
-use App\Model\Repository\LogRepository;
+use App\Domain\Interfaces\Output\VatGetterInterface;
+use App\Domain\Interfaces\Output\VatSaverInterface;
+use App\Domain\VatSaver;
+use App\External\Interfaces\RabbitClientInterface;
+use App\External\Mq\RabbitClient;
+use App\External\Soap\ViesClient;
 use App\Model\Repository\VatRepository;
 use App\Rules\Vat;
-use App\Service\Interfaces\RabbitClientInterface;
-use App\Service\Interfaces\VatGetterInterface;
-use App\Service\RabbitClient;
-use App\Service\VIES;
 use App\Utils\Paginator;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\JsonResponse;
@@ -36,23 +36,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $vies = new VIES(env('VIES_WSDL_URL'));
-        $this->app->singleton(VatGetterInterface::class, function () use ($vies) {
-            return $vies;
+        $this->app->singleton(VatGetterInterface::class, function () {
+            return new ViesClient(env('VIES_WSDL_URL'));
         });
-
-        $vatRepository = new VatRepository();
-        $this->app->singleton(VatSaverInterface::class, function () use ($vatRepository) {
-            return $vatRepository;
+        $this->app->singleton(VatSaverInterface::class, function () {
+            return resolve(VatRepository::class);
         });
-        $this->app->singleton(VatRepository::class, function () use ($vatRepository) {
-            return $vatRepository;
+        $this->app->singleton(\App\Domain\Interfaces\Input\VatSaverInterface::class, function () {
+            return new VatSaver(resolve(VatGetterInterface::class), resolve(VatSaverInterface::class));
         });
         $this->app->singleton(RabbitClientInterface::class, function () {
             return new RabbitClient(env('RABBIT_URL'));
-        });
-        $this->app->singleton(LogRepository::class, function () {
-            return new LogRepository();
         });
     }
 
@@ -72,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function registerResponseMacro(ResponseFactory $responseFactory)
     {
-        $responseFactory->macro('success', function ($data = null) {
+        $responseFactory->macro('success', function ($data = null, $headers = []) {
             $result = ['success' => true];
             if ($data instanceof JsonSerializable) {
                 $data = $data->jsonSerialize();
@@ -87,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
                 $result['meta'] = $meta;
             }
 
-            return new JsonResponse($result);
+            return new JsonResponse($result, 200, $headers);
         });
     }
 

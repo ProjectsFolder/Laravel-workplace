@@ -1,36 +1,35 @@
 <?php
 
-namespace App\Service;
+namespace App\External\Mq;
 
-use App\Service\Interfaces\RabbitClientInterface;
+use App\External\Interfaces\RabbitClientInterface;
 use Enqueue\AmqpLib\AmqpConnectionFactory;
 use Enqueue\AmqpLib\AmqpConsumer;
 use Interop\Amqp\AmqpQueue;
 use Interop\Amqp\AmqpTopic;
 use Interop\Amqp\Impl\AmqpBind;
 use Interop\Queue\Consumer;
-use Interop\Queue\Exception\Exception;
-use Interop\Queue\Exception\InvalidDestinationException;
-use Interop\Queue\Exception\InvalidMessageException;
 
 class RabbitClient implements RabbitClientInterface
 {
+    private $rabbitUrl;
     private $context;
 
     public function __construct(string $rabbitUrl)
     {
-        $factory = new AmqpConnectionFactory($rabbitUrl);
+        $this->rabbitUrl = $rabbitUrl;
+        $this->reconnect();
+    }
+
+    public function reconnect()
+    {
+        $factory = new AmqpConnectionFactory($this->rabbitUrl);
         $this->context = $factory->createContext();
     }
 
     /**
      * @param string $exchangeName
      * @param string $message
-     *
-     * @throws \Interop\Queue\Exception
-     * @throws Exception
-     * @throws InvalidDestinationException
-     * @throws InvalidMessageException
      */
     public function send(string $exchangeName, string $message)
     {
@@ -45,8 +44,6 @@ class RabbitClient implements RabbitClientInterface
      * @param string $exchangeName
      *
      * @return AmqpConsumer|Consumer
-     *
-     * @throws Exception
      */
     public function createConsumer(string $exchangeName)
     {

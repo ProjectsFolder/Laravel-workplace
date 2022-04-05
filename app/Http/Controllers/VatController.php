@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Interfaces\Input\VatSaverInterface;
 use App\Http\Requests\VatRequest;
-use App\Model\Interfaces\VatSaverInterface;
 use App\Model\Repository\VatRepository;
-use App\Service\Interfaces\VatGetterInterface;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -21,18 +20,16 @@ class VatController extends Controller
 
     public function check(
         Request $request,
-        VatGetterInterface $vatGetter,
         VatSaverInterface $vatSaver
     ): Response {
         $this->validateData($request->all(), ['vat' => 'required|vat']);
 
-        $vatData = $vatGetter->get($request->query('vat'));
-        if (!$vatData->getValid()) {
+        $id = $vatSaver->saveVat($request->query('vat'));
+        if (empty($id)) {
             throw new HttpException(400, 'Vat is not valid');
         }
-        $vat = $vatSaver->store($vatData);
 
-        return response()->success($vat);
+        return response()->success($this->vatRepository->get($id));
     }
 
     public function list(): Response
