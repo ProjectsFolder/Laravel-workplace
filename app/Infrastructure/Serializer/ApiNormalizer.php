@@ -20,7 +20,7 @@ final class ApiNormalizer implements NormalizerInterface, DenormalizerInterface
         $this->serializer = new Serializer([
             new ObjectNormalizer(
                 new ClassMetadataFactory(
-                    new YamlFileLoader('../config/serializer.yaml')
+                    new YamlFileLoader(base_path().'/config/serializer.yaml')
                 )
             ),
             new DateTimeNormalizer([
