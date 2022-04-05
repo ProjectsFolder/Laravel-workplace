@@ -2,9 +2,7 @@
 
 namespace App\Domain\Entity\Vat;
 
-use JsonSerializable;
-
-class VatData implements JsonSerializable
+class VatData
 {
     private $countryCode;
     private $vatNumber;
@@ -16,7 +14,7 @@ class VatData implements JsonSerializable
     /**
      * @return string
      */
-    public function getCountryCode(): string
+    public function getCountryCode(): ?string
     {
         return $this->countryCode;
     }
@@ -36,7 +34,7 @@ class VatData implements JsonSerializable
     /**
      * @return string
      */
-    public function getVatNumber(): string
+    public function getVatNumber(): ?string
     {
         return $this->vatNumber;
     }
@@ -76,7 +74,7 @@ class VatData implements JsonSerializable
     /**
      * @return bool
      */
-    public function getValid(): bool
+    public function getValid(): ?bool
     {
         return $this->valid;
     }
@@ -96,7 +94,7 @@ class VatData implements JsonSerializable
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -116,7 +114,7 @@ class VatData implements JsonSerializable
     /**
      * @return string
      */
-    public function getAddress(): string
+    public function getAddress(): ?string
     {
         return $this->address;
     }
@@ -131,10 +129,5 @@ class VatData implements JsonSerializable
         $this->address = $address;
 
         return $this;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return get_object_vars($this);
     }
 }

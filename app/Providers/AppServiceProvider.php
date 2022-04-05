@@ -8,16 +8,20 @@ use App\Domain\VatSaver;
 use App\External\Interfaces\RabbitClientInterface;
 use App\External\Mq\RabbitClient;
 use App\External\Soap\ViesClient;
+use App\Infrastructure\Serializer\ApiEncoder;
+use App\Infrastructure\Serializer\ApiNormalizer;
 use App\Model\Repository\VatRepository;
 use App\Rules\Vat;
 use App\Utils\Paginator;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
 use JsonSerializable;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,6 +52,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(RabbitClientInterface::class, function () {
             return new RabbitClient(env('RABBIT_URL'));
         });
+        $this->app->singleton(SerializerInterface::class, function () {
+            return new Serializer([new ApiNormalizer()], [new ApiEncoder()]);
+        });
     }
 
     /**
@@ -55,33 +62,30 @@ class AppServiceProvider extends ServiceProvider
      *
      * @param ResponseFactory $responseFactory
      * @param Factory $validatorFactory
+     * @param SerializerInterface $serializer
      *
      * @return void
      */
-    public function boot(ResponseFactory $responseFactory, Factory $validatorFactory)
-    {
-        $this->registerResponseMacro($responseFactory);
+    public function boot(
+        ResponseFactory $responseFactory,
+        Factory $validatorFactory,
+        SerializerInterface $serializer
+    ) {
+        $this->registerResponseMacro($responseFactory, $serializer);
         $this->registerValidationRules($validatorFactory);
     }
 
-    private function registerResponseMacro(ResponseFactory $responseFactory)
+    private function registerResponseMacro(ResponseFactory $responseFactory, SerializerInterface $serializer)
     {
-        $responseFactory->macro('success', function ($data = null, $headers = []) {
-            $result = ['success' => true];
+        $responseFactory->macro('success', function ($data = null, $meta = [], $headers = []) use ($serializer) {
             if ($data instanceof JsonSerializable) {
                 $data = $data->jsonSerialize();
             }
-            $meta = [];
-            if (isset($data['meta'])) {
-                $meta = $data['meta'];
-                unset($data['meta']);
-            }
-            $result['data'] = is_array($data) && 1 == count($data) ? array_shift($data) : $data;
-            if (!empty($meta)) {
-                $result['meta'] = $meta;
-            }
+            $meta['success'] = true;
+            $responseData = $serializer->serialize($data, 'api', $meta);
+            $headers['Content-Type'] = 'application/json';
 
-            return new JsonResponse($result, 200, $headers);
+            return new Response($responseData, 200, $headers);
         });
     }
 

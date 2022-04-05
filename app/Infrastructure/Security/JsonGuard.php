@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Security;
 
 use App\Utils\StringUtils;
 use Illuminate\Contracts\Auth\Authenticatable;

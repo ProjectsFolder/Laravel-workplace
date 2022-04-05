@@ -5,11 +5,11 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class Handler extends ExceptionHandler
 {
@@ -60,22 +60,25 @@ class Handler extends ExceptionHandler
     {
         $e = $this->prepareException($e);
 
+        $params = [
+            'success' => false,
+            'error_message' => $e->getMessage(),
+        ];
+        if (true == env('APP_DEBUG')) {
+            $params['error_code'] = $e->getCode();
+            $params['error_file'] = $e->getFile();
+            $params['error_line'] = $e->getLine();
+            $params['error_traceback'] = $e->getTrace();
+        }
+        $serializer = $this->container->get(SerializerInterface::class);
+        $responseData = $serializer->serialize([], 'api', $params);
+
         $code = 500;
         if ($e instanceof HttpExceptionInterface) {
             $code = $e->getStatusCode();
         }
-        $params = [
-            'success' => false,
-            'error' => $e->getMessage(),
-        ];
 
-        if (true == env('APP_DEBUG')) {
-            $params['file'] = $e->getFile();
-            $params['line'] = $e->getLine();
-            $params['trace'] = $e->getTrace();
-        }
-
-        return new JsonResponse($params, $code);
+        return new Response($responseData, $code, ['Content-Type' => 'application/json']);
     }
 
     /**

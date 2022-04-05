@@ -8,7 +8,7 @@ namespace Illuminate\Contracts\Routing {
 
     class ResponseFactory
     {
-        public function success($data = null, $headers = []): Response
+        public function success($data = null, $meta = [], $headers = []): Response
         {
         }
     }
