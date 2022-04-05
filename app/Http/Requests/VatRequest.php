@@ -40,6 +40,6 @@ class VatRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        Handler::failed($validator);
+        Handler::failed($validator->errors()->all());
     }
 }

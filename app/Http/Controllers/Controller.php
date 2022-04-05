@@ -17,7 +17,7 @@ class Controller extends BaseController
     {
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
-            Handler::failed($validator);
+            Handler::failed($validator->errors()->all());
         }
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,11 +79,10 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * @param Validator $validator
+     * @param array $errors
      */
-    public static function failed(Validator $validator)
+    public static function failed(array $errors)
     {
-        $errors = $validator->errors()->all();
         $message = "Validation errors:\n";
         $message .= implode("\n", $errors);
         throw new HttpException(400, $message);
