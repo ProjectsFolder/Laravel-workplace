@@ -1,21 +1,40 @@
 <?php
 
-namespace App;
+namespace App\Model\Entity;
 
-use Illuminate\Auth\GenericUser;
+use App\Infrastructure\Security\RolesInterface;
+use App\Infrastructure\Security\WithRoles;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends GenericUser implements JWTSubject
+/**
+ * @property mixed|string name
+ * @property mixed|string password
+ * @property mixed|string[] roles
+ */
+class User extends Model implements JWTSubject, AuthenticatableContract, RolesInterface
 {
-    use Notifiable;
+    use Notifiable, Authenticatable, WithRoles;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->roles = ['ROLE_USER'];
+    }
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'email',
+        'password'
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -29,7 +48,9 @@ class User extends GenericUser implements JWTSubject
      *
      * @var array
      */
-    protected $casts = [];
+    protected $casts = [
+        'roles' => 'array'
+    ];
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

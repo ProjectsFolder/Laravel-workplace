@@ -46,7 +46,7 @@ class JsonGuard implements Guard
 
     public function validate(array $credentials = []): bool
     {
-        if (empty($credentials['email']) || empty($credentials['password'])) {
+        if (empty($credentials['name']) || empty($credentials['password'])) {
             $json = $this->request->get('jsondata', '');
             $credentials = StringUtils::isJson($json) ? json_decode($json, true) : null;
             if (empty($credentials)) {

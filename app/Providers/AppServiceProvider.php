@@ -8,6 +8,7 @@ use App\Domain\VatSaver;
 use App\External\Interfaces\RabbitClientInterface;
 use App\External\Mq\RabbitClient;
 use App\External\Soap\ViesClient;
+use App\Infrastructure\Security\RoleTreeParser;
 use App\Infrastructure\Serializer\ApiEncoder;
 use App\Infrastructure\Serializer\ApiNormalizer;
 use App\Model\Repository\VatRepository;
@@ -54,6 +55,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(SerializerInterface::class, function () {
             return new Serializer([new ApiNormalizer()], [new ApiEncoder()]);
+        });
+        $this->app->singleton(RoleTreeParser::class, function () {
+            return new RoleTreeParser(config('auth.roles', []));
         });
     }
 

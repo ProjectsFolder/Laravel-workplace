@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
+use App\Http\Requests\UserCredentialsRequest;
+use App\Model\Entity\User;
+use App\Model\Repository\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +15,7 @@ class AuthController extends Controller
 {
     public function login(Request $request, JWTAuth $auth): Response
     {
-        $input = $request->only(['email', 'password']);
+        $input = $request->only(['name', 'password']);
         if (!$token = $auth->attempt($input)) {
             throw new HttpException(400, 'Login or password is incorrect');
         }
@@ -38,6 +40,13 @@ class AuthController extends Controller
         }
 
         throw new HttpException(400, 'Login or password is incorrect');
+    }
+
+    public function register(UserCredentialsRequest $request, UserRepository $userRepository): Response
+    {
+        $userRepository->create($request);
+
+        return response()->success();
     }
 
     public function refresh(JWTAuth $auth): Response

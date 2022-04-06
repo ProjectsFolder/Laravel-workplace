@@ -43,13 +43,13 @@ return [
 
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'external',
+            'provider' => 'mysql',
             //'hash' => false,
         ],
 
         'custom' => [
             'driver' => 'json',
-            'provider' => 'external',
+            'provider' => 'mysql',
         ],
     ],
 
@@ -71,8 +71,8 @@ return [
     */
 
     'providers' => [
-        'external' => [
-            'driver' => 'external',
+        'mysql' => [
+            'driver' => 'mysql',
         ],
 
 //        'users' => [
@@ -123,4 +123,17 @@ return [
 
     'password_timeout' => 10800,
 
+    'roles' => [
+        'ROLE_HELPER' => 'ROLE_USER',
+        'ROLE_MANAGER' => 'ROLE_USER',
+        'ROLE_TESTER' => 'ROLE_USER',
+        'ROLE_PRODUCT' => [
+            'ROLE_MANAGER',
+            'ROLE_TESTER',
+        ],
+        'ROLE_ADMIN' => [
+            'ROLE_PRODUCT',
+            'ROLE_HELPER',
+        ],
+    ]
 ];

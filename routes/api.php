@@ -16,8 +16,12 @@ use App\Http\Controllers\VatController;
 */
 
 Route::post('/login', [AuthController::class, 'login'])->name('auth_login');
-Route::post('/custom/login', [AuthController::class, 'customLogin'])->middleware(['guard:custom'])->name('auth_custom_login');
-Route::group(['middleware' => 'auth.jwt'], function () {
+Route::post('/custom/login', [AuthController::class, 'customLogin'])
+    ->middleware(['guard:custom'])
+    ->name('auth_custom_login')
+;
+Route::post('/register', [AuthController::class, 'register'])->name('auth_register');
+Route::group(['middleware' => ['auth.jwt', 'role:ROLE_MANAGER']], function () {
     Route::put('/token/refresh', [AuthController::class, 'refresh'])->name('auth_refresh');
     Route::prefix('vat')->group(function () {
         Route::post('/check', [VatController::class, 'check'])->name('vat_check');

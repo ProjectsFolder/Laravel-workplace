@@ -1,19 +1,26 @@
 <?php
 
-namespace App\Providers;
+namespace App\Infrastructure\Security;
 
-use App\User;
+use App\Model\Repository\UserRepository;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Contracts\Hashing\Hasher;
 
-class ExternalUserProvider implements UserProvider
+class DatabaseUserProvider implements UserProvider
 {
+    private $userRepository;
+    private $hasher;
+
+    public function __construct(UserRepository $userRepository, Hasher $hasher)
+    {
+        $this->userRepository = $userRepository;
+        $this->hasher = $hasher;
+    }
+
     public function retrieveById($identifier): ?Authenticatable
     {
-        return new User([
-            'id' => $identifier,
-            'email' => $identifier,
-        ]);
+        return $this->userRepository->find($identifier);
     }
 
     public function retrieveByToken($identifier, $token): ?Authenticatable
@@ -27,14 +34,11 @@ class ExternalUserProvider implements UserProvider
 
     public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-        if (!isset($credentials['email'])) {
+        if (!isset($credentials['name'])) {
             return null;
         }
 
-        return new User([
-            'id' => $credentials['email'],
-            'email' => $credentials['email'],
-        ]);
+        return $this->userRepository->findByName($credentials['name']);
     }
 
     public function validateCredentials(Authenticatable $user, array $credentials): bool
@@ -43,9 +47,6 @@ class ExternalUserProvider implements UserProvider
             return false;
         }
 
-        return
-            'admin' == $user->getAuthIdentifier() &&
-            'secret' == $credentials['password']
-        ;
+        return $this->hasher->check($credentials['password'], $user->getAuthPassword());
     }
 }
