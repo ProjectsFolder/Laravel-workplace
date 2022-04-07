@@ -8,6 +8,7 @@ use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
@@ -43,6 +44,11 @@ class User extends Model implements JWTSubject, AuthenticatableContract, RolesIn
      */
     protected $hidden = [];
 
+    protected $visible = [
+        'id',
+        'name',
+    ];
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -70,5 +76,10 @@ class User extends Model implements JWTSubject, AuthenticatableContract, RolesIn
     public function getJWTCustomClaims(): array
     {
         return [];
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
     }
 }

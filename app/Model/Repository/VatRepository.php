@@ -6,10 +6,18 @@ use App\Domain\Entity\Vat\VatData;
 use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Http\Requests\VatRequest;
 use App\Model\Entity\Vat;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class VatRepository implements VatSaverInterface
 {
+    protected $guard;
+
+    public function __construct(Guard $guard)
+    {
+        $this->guard = $guard;
+    }
+
     public function store(VatData $data): int
     {
         $vat = new Vat();
@@ -21,6 +29,7 @@ class VatRepository implements VatSaverInterface
             'name' => $data->getName(),
             'address' => $data->getAddress(),
         ]);
+        $vat->user()->associate($this->guard->user());
         $vat->save();
 
         return $vat->id;
