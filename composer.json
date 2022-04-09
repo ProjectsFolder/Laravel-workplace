@@ -15,6 +15,7 @@
         "doctrine/dbal": "^3.3",
         "enqueue/amqp-lib": "^0.10.9",
         "fideloper/proxy": "^4.4",
+        "fruitcake/laravel-cors": "^3.0",
         "laravel/framework": "^6.20.26",
         "laravel/tinker": "^2.5",
         "symfony/property-access": "^5.4",
