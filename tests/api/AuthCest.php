@@ -4,22 +4,9 @@ class AuthCest
 {
     public function _before(ApiTester $I)
     {
-    }
-
-    public function registerTest(ApiTester $I)
-    {
-        $I->sendPost('/register', [
-            'name' => 'asylum29',
-            'password' => '',
-        ]);
-        $I->seeResponseIsJson();
-        $I->seeResponseMatchesJsonType([
-            'success' => 'boolean',
-        ]);
-        $I->seeResponseContainsJson(['success' => false]);
 
         $I->sendPost('/register', [
-            'name' => 'asylum29',
+            'name' => 'test',
             'password' => 'secret',
         ]);
         $I->seeResponseIsJson();
@@ -28,10 +15,33 @@ class AuthCest
         ]);
     }
 
+    public function registerTest(ApiTester $I)
+    {
+        $I->sendPost('/register', [
+            'name' => 'test',
+            'password' => 'secret',
+        ]);
+        $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([
+            'success' => 'boolean',
+        ]);
+        $I->seeResponseContainsJson(['success' => false]);
+
+        $I->sendPost('/register', [
+            'name' => 'test2',
+            'password' => '',
+        ]);
+        $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([
+            'success' => 'boolean',
+        ]);
+        $I->seeResponseContainsJson(['success' => false]);
+    }
+
     public function loginTest(ApiTester $I)
     {
         $I->sendPost('/login', [
-            'name' => 'asylum29',
+            'name' => 'test',
             'password' => 'secret',
         ]);
         $I->seeResponseCodeIsSuccessful();
@@ -47,7 +57,7 @@ class AuthCest
 
 
         $I->sendPost('/login', [
-            'name' => 'asylum29',
+            'name' => 'test',
             'password' => 'secret2',
         ]);
         $I->seeResponseCodeIs(400);
@@ -59,7 +69,7 @@ class AuthCest
         $I->seeResponseContainsJson(['success' => false]);
 
         $I->sendPost('/login', [
-            'name' => 'asylum29',
+            'name' => 'test',
         ]);
         $I->seeResponseCodeIs(400);
         $I->seeResponseIsJson();
@@ -84,7 +94,7 @@ class AuthCest
     public function customLoginTest(ApiTester $I)
     {
         $I->sendPost('/custom/login', [
-            'jsondata' => json_encode(['name' => 'asylum29', 'password' => 'secret']),
+            'jsondata' => json_encode(['name' => 'test', 'password' => 'secret']),
         ]);
         $I->seeResponseCodeIsSuccessful();
         $I->seeResponseIsJson();
@@ -98,7 +108,7 @@ class AuthCest
         $I->seeResponseContainsJson(['success' => true]);
 
         $I->sendPost('/custom/login', [
-            'jsondata' => json_encode(['name' => 'asylum29', 'password' => 'secret2']),
+            'jsondata' => json_encode(['name' => 'test', 'password' => 'secret2']),
         ]);
         $I->seeResponseCodeIs(400);
         $I->seeResponseIsJson();
@@ -112,15 +122,12 @@ class AuthCest
     public function refreshTokenTest(ApiTester $I)
     {
         $response = $I->sendPost('/login', [
-            'name' => 'asylum29',
+            'name' => 'test',
             'password' => 'secret',
         ]);
         $response = json_decode($response, true);
         $I->haveHttpHeader('Authorization', "Bearer {$response['data']['token']}");
-        $I->sendPut('/token/refresh', [
-            'name' => 'asylum29',
-            'password' => 'secret',
-        ]);
+        $I->sendPut('/token/refresh');
         $I->seeResponseCodeIsSuccessful();
         $I->seeResponseIsJson();
         $I->seeResponseMatchesJsonType([
