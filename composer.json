@@ -24,6 +24,12 @@
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-asserts": "^2.0",
+        "codeception/module-laravel": "^2.2",
+        "codeception/module-phpbrowser": "^2.0",
+        "codeception/module-rest": "^2.0",
+        "codeception/module-webdriver": "^2.0",
         "facade/ignition": "^1.16.15",
         "fakerphp/faker": "^1.9.1",
         "friendsofphp/php-cs-fixer": "v2.16.3",
