@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28babdefc6cfaa1b26249cfb81686f49",
+    "content-hash": "4c040021e6dfd6dd8a9bfcecb6088063",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -6133,6 +6133,53 @@
                 "source": "https://github.com/Codeception/module-asserts/tree/2.0.0"
             },
             "time": "2021-11-30T00:38:49+00:00"
+        },
+        {
+            "name": "codeception/module-cli",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Codeception/module-cli.git",
+                "reference": "aa9bdd8346983eebc3aa3f21e902399ceefec372"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Codeception/module-cli/zipball/aa9bdd8346983eebc3aa3f21e902399ceefec372",
+                "reference": "aa9bdd8346983eebc3aa3f21e902399ceefec372",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "*@dev",
+                "php": "^7.4 || ^8.0"
+            },
+            "conflict": {
+                "codeception/codeception": "<4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Bodnarchuk"
+                }
+            ],
+            "description": "Codeception module for testing basic shell commands and shell output",
+            "homepage": "https://codeception.com/",
+            "keywords": [
+                "codeception"
+            ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-cli/issues",
+                "source": "https://github.com/Codeception/module-cli/tree/2.0.0"
+            },
+            "time": "2021-12-01T01:21:55+00:00"
         },
         {
             "name": "codeception/module-laravel",

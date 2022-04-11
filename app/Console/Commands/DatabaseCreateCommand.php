@@ -50,6 +50,8 @@ class DatabaseCreateCommand extends Command
 
         config(['database.connections.mysql.database' => $schemaName]);
 
+        $this->info('Database created!');
+
         return 0;
     }
 }

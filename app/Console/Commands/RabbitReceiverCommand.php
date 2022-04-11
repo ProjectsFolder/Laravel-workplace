@@ -22,7 +22,7 @@ class RabbitReceiverCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'rabbit:receive {--exchange=test}';
+    protected $signature = 'rabbit:receive {--exchange=test} {--o|once}';
 
     /**
      * The console command description.
@@ -80,6 +80,10 @@ class RabbitReceiverCommand extends Command
                         }
                         $consumer->acknowledge($message);
                     }
+
+                    if ($this->option('once')) {
+                        break 2;
+                    }
                 }
             } catch (Exception $ignored) {
                 $reconnect = true;
@@ -87,5 +91,9 @@ class RabbitReceiverCommand extends Command
                 sleep(5);
             }
         }
+
+        $this->info('Rabbit-receiver stopped!');
+
+        return 0;
     }
 }

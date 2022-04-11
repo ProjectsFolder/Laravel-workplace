@@ -1,5 +1,10 @@
 <?php
 
+use App\Domain\Entity\Vat\VatData;
+use App\Domain\Interfaces\Output\VatGetterInterface;
+use Codeception\Stub;
+use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
+
 class VatCest
 {
     public function _before(ApiTester $I)
@@ -14,6 +19,20 @@ class VatCest
         ]);
         $response = json_decode($response, true);
         $I->haveHttpHeader('Authorization', "Bearer {$response['data']['token']}");
+
+        $vatGetter = Stub::makeEmpty(VatGetterInterface::class);
+        $vatGetter->method('get')->with('LV44103001941')->will(new ReturnCallback(function () {
+            $data = new VatData();
+            $data->setValid(true);
+            $data->setName('name');
+            $data->setCountryCode('LV');
+            $data->setAddress('address');
+            $data->setVatNumber('44103001941');
+            $data->setRequestDate(new DateTime());
+
+            return $data;
+        }));
+        $I->haveInstance(VatGetterInterface::class, $vatGetter);
     }
 
     // tests

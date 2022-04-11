@@ -9,19 +9,21 @@ class RabbitClientTest extends Unit
      * @var \UnitTester
      */
     protected $tester;
-    /** @var RabbitClientInterface */
+    /**
+     * @var RabbitClientInterface
+     */
     protected $client;
 
     protected function _before()
     {
-        $this->client = resolve(RabbitClientInterface::class);
+        $this->client = $this->tester->getApplication()->get(RabbitClientInterface::class);
     }
 
     protected function _after()
     {
     }
 
-    public function testSomeFeature()
+    public function test()
     {
         $this->client->send('v1.testing', 'Test Message');
         $consumer = $this->client->createConsumer('v1.testing');

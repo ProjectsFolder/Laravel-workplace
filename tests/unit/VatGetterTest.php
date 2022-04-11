@@ -16,7 +16,7 @@ class VatGetterTest extends Unit
 
     protected function _before()
     {
-        $this->getter = resolve(VatGetterInterface::class);
+        $this->getter = $this->tester->getApplication()->get(VatGetterInterface::class);
     }
 
     protected function _after()

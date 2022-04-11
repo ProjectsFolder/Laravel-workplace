@@ -10,4 +10,6 @@ modules:
         - Laravel:
             environment_file: .env.testing
         - \Helper\Acceptance
+        - Cli
+        - Asserts
 step_decorators: ~

@@ -43,6 +43,8 @@ class RabbitStopReceiverCommand extends Command
     {
         $this->redis->set('rabbit_receive_enable', false);
 
+        $this->info('Rabbit-receiver stopped!');
+
         return 0;
     }
 }
