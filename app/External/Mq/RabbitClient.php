@@ -13,6 +13,7 @@ use Interop\Queue\Consumer;
 use Interop\Queue\Exception\Exception;
 use Interop\Queue\Exception\InvalidDestinationException;
 use Interop\Queue\Exception\InvalidMessageException;
+use Interop\Queue\Topic;
 
 class RabbitClient implements RabbitClientInterface
 {
@@ -43,33 +44,43 @@ class RabbitClient implements RabbitClientInterface
      */
     public function send(string $exchangeName, string $message)
     {
-        $endpoint = $this->context->createTopic($exchangeName);
-        $endpoint->setType(AmqpTopic::TYPE_FANOUT);
-        $endpoint->setFlags(AmqpTopic::FLAG_DURABLE);
-        $this->context->declareTopic($endpoint);
+        $endpoint = $this->createTopic($exchangeName);
         $producer = $this->context->createProducer();
         $producer->send($endpoint, $this->context->createMessage($message));
     }
 
     /**
      * @param string $exchangeName
+     * @param string $queueName
      *
      * @return AmqpConsumer|Consumer
      *
      * @throws Exception
      */
-    public function createConsumer(string $exchangeName)
+    public function createConsumer(string $exchangeName, string $queueName)
     {
-        $queue = $this->context->createQueue(uniqid());
-        $queue->setFlags(AmqpQueue::FLAG_IFUNUSED | AmqpQueue::FLAG_AUTODELETE | AmqpQueue::FLAG_EXCLUSIVE);
+        $endpoint = $this->createTopic($exchangeName);
+
+        $queue = $this->context->createQueue($queueName);
+        $queue->setFlags(AmqpQueue::FLAG_DURABLE);
         $this->context->declareQueue($queue);
 
+        $this->context->bind(new AmqpBind($endpoint, $queue));
+        return $this->context->createConsumer($queue);
+    }
+
+    /**
+     * @param string $exchangeName
+     *
+     * @return AmqpTopic|Topic
+     */
+    private function createTopic(string $exchangeName)
+    {
         $endpoint = $this->context->createTopic($exchangeName);
         $endpoint->setType(AmqpTopic::TYPE_FANOUT);
         $endpoint->setFlags(AmqpTopic::FLAG_DURABLE);
         $this->context->declareTopic($endpoint);
 
-        $this->context->bind(new AmqpBind($endpoint, $queue));
-        return $this->context->createConsumer($queue);
+        return $endpoint;
     }
 }

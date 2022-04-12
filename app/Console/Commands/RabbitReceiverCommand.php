@@ -5,10 +5,10 @@ namespace App\Console\Commands;
 use App\Domain\Interfaces\Input\VatSaverInterface;
 use App\External\Interfaces\RabbitClientInterface;
 use App\Model\Repository\LogRepository;
+use Enqueue\AmqpLib\AmqpConsumer;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Redis\RedisManager;
-use Interop\Queue\Consumer;
 
 class RabbitReceiverCommand extends Command
 {
@@ -67,8 +67,8 @@ class RabbitReceiverCommand extends Command
                     $this->rabbitClient->reconnect();
                     $reconnect = false;
                 }
-                /** @var Consumer $consumer */
-                $consumer = $this->rabbitClient->createConsumer($this->option('exchange'));
+                /** @var AmqpConsumer $consumer */
+                $consumer = $this->rabbitClient->createConsumer($this->option('exchange'), env('RABBIT_QUEUE_NAME'));
                 while (!empty($this->redis->get('rabbit_receive_enable', false))) {
                     $message = $consumer->receive(5000);
                     if (!empty($message)) {
