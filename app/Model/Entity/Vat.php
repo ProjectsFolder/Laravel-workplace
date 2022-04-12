@@ -15,14 +15,7 @@ class Vat extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'country_code',
-        'vat_number',
-        'request_date',
-        'valid',
-        'name',
-        'address',
-    ];
+    protected $guarded = [];
 
     protected $with = [
         'user'
