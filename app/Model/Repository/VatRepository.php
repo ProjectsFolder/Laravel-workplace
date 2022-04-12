@@ -7,17 +7,14 @@ use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Http\Requests\VatRequest;
 use App\Model\Entity\Vat;
 use App\Utils\Mapper\TypeMapper;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class VatRepository implements VatSaverInterface
 {
-    protected $guard;
     protected $typeMapper;
 
-    public function __construct(Guard $guard, TypeMapper $typeMapper)
+    public function __construct(TypeMapper $typeMapper)
     {
-        $this->guard = $guard;
         $this->typeMapper = $typeMapper;
     }
 
