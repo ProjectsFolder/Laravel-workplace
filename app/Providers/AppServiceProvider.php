@@ -13,6 +13,8 @@ use App\Infrastructure\Serializer\ApiEncoder;
 use App\Infrastructure\Serializer\ApiNormalizer;
 use App\Model\Repository\VatRepository;
 use App\Rules\Vat;
+use App\Utils\Mapper\Mappers\VatDataToVatEntity;
+use App\Utils\Mapper\TypeMapper;
 use App\Utils\Paginator;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Response;
@@ -28,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
 {
     protected $rules = [
         Vat::class,
+    ];
+
+    protected $mappers = [
+        VatDataToVatEntity::class,
     ];
 
     public $bindings = [
@@ -58,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(RoleTreeParser::class, function () {
             return new RoleTreeParser(config('auth.roles', []));
+        });
+        $this->app->tag($this->mappers, ['type-mapper']);
+        $this->app->singleton(TypeMapper::class, function () {
+            return new TypeMapper($this->app->tagged('type-mapper'));
         });
     }
 

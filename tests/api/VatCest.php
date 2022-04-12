@@ -7,6 +7,8 @@ use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
 
 class VatCest
 {
+    private $id;
+
     public function _before(ApiTester $I)
     {
         $I->sendPost('/register', [
@@ -21,22 +23,33 @@ class VatCest
         $I->haveHttpHeader('Authorization', "Bearer {$response['data']['token']}");
 
         $vatGetter = Stub::makeEmpty(VatGetterInterface::class);
-        $vatGetter->method('get')->with('LV44103001941')->will(new ReturnCallback(function () {
-            $data = new VatData();
-            $data->setValid(true);
-            $data->setName('name');
-            $data->setCountryCode('LV');
-            $data->setAddress('address');
-            $data->setVatNumber('44103001941');
-            $data->setRequestDate(new DateTime());
+        $vatGetter->method('get')->will(new ReturnCallback(function () {
+            $args = func_get_args();
+            if ('LV44103001941' == $args[0]) {
+                $data = new VatData();
+                $data->setValid(true);
+                $data->setName('name');
+                $data->setCountryCode('LV');
+                $data->setAddress('address');
+                $data->setVatNumber('44103001941');
+                $data->setRequestDate(new DateTime());
 
-            return $data;
+                return $data;
+            }
+
+            return null;
         }));
         $I->haveInstance(VatGetterInterface::class, $vatGetter);
+
+        $response = $I->sendPost('/vat/check?vat=LV44103001941');
+        $I->canSeeResponseCodeIsSuccessful();
+        $I->seeResponseContainsJson(['success' => true]);
+        $response = json_decode($response, true);
+        $this->id = $response['data']['id'];
     }
 
     // tests
-    public function checkVatTest(ApiTester $I)
+    public function checkVatFailsTest(ApiTester $I)
     {
         $I->sendPost('/vat/check?vat');
         $I->canSeeResponseCodeIs(400);
@@ -49,10 +62,6 @@ class VatCest
         $I->sendPost('/vat/check?vat=LV1234567890');
         $I->canSeeResponseCodeIs(400);
         $I->seeResponseContainsJson(['success' => false]);
-
-        $I->sendPost('/vat/check?vat=LV44103001941');
-        $I->canSeeResponseCodeIsSuccessful();
-        $I->seeResponseContainsJson(['success' => true]);
     }
 
     public function getVatListTest(ApiTester $I)
@@ -64,31 +73,25 @@ class VatCest
 
     public function getVatTest(ApiTester $I)
     {
-        $response = $I->sendPost('/vat/check?vat=LV44103001941');
-        $response = json_decode($response, true);
-        $id = $response['data']['id'];
-        $next = $id + 1;
+        $next = $this->id + 1;
 
         $I->sendGet("/vat/$next");
         $I->seeResponseCodeIs(404);
         $I->seeResponseContainsJson(['success' => false]);
 
-        $I->sendGet("/vat/$id");
+        $I->sendGet("/vat/$this->id");
         $I->seeResponseContainsJson(['success' => true]);
     }
 
     public function updateVatTest(ApiTester $I)
     {
-        $response = $I->sendPost('/vat/check?vat=LV44103001941');
-        $response = json_decode($response, true);
-        $id = $response['data']['id'];
-        $next = $id + 1;
+        $next = $this->id + 1;
 
         $I->sendPut("/vat/$next");
         $I->seeResponseCodeIs(404);
         $I->seeResponseContainsJson(['success' => false]);
 
-        $I->sendPut("/vat/$id", [
+        $I->sendPut("/vat/$this->id", [
             'valid' => 0
         ]);
         $I->seeResponseContainsJson(['success' => true]);
@@ -96,16 +99,13 @@ class VatCest
 
     public function deleteVatTest(ApiTester $I)
     {
-        $response = $I->sendPost('/vat/check?vat=LV44103001941');
-        $response = json_decode($response, true);
-        $id = $response['data']['id'];
-        $next = $id + 1;
+        $next = $this->id + 1;
 
         $I->sendDelete("/vat/$next");
         $I->seeResponseCodeIs(404);
         $I->seeResponseContainsJson(['success' => false]);
 
-        $I->sendDelete("/vat/$id");
+        $I->sendDelete("/vat/$this->id");
         $I->seeResponseContainsJson(['success' => true]);
     }
 }

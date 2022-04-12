@@ -57,11 +57,11 @@ class VatSaverTest extends Unit
         $id = $saver->saveVat('RU123456');
         $this->assertEmpty($id);
 
+        $this->expectExceptionMessage('get exception');
         $vatGetter->method('get')->with('RU123456')->will($this->returnCallback(function () {
             throw new Exception('get exception');
         }));
         $saver = new VatSaver($vatGetter, $this->vatSaver);
-        $id = $saver->saveVat('RU123456');
-        $this->assertEmpty($id);
+        $saver->saveVat('RU123456');
     }
 }

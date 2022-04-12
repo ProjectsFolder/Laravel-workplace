@@ -6,30 +6,24 @@ use App\Domain\Entity\Vat\VatData;
 use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Http\Requests\VatRequest;
 use App\Model\Entity\Vat;
+use App\Utils\Mapper\TypeMapper;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class VatRepository implements VatSaverInterface
 {
     protected $guard;
+    protected $typeMapper;
 
-    public function __construct(Guard $guard)
+    public function __construct(Guard $guard, TypeMapper $typeMapper)
     {
         $this->guard = $guard;
+        $this->typeMapper = $typeMapper;
     }
 
     public function store(VatData $data): int
     {
-        $vat = new Vat();
-        $vat->fill([
-            'country_code' => $data->getCountryCode(),
-            'vat_number' => $data->getVatNumber(),
-            'request_date' => $data->getRequestDate(),
-            'valid' => $data->getValid(),
-            'name' => $data->getName(),
-            'address' => $data->getAddress(),
-        ]);
-        $vat->user()->associate($this->guard->user());
+        $vat = $this->typeMapper->convert($data, Vat::class);
         $vat->save();
 
         return $vat->id;
