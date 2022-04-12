@@ -13,10 +13,12 @@ trait WithRoles
 
     public function addRole(string $role)
     {
-        $this->{$this->rolesIdentifierName} = array_merge(
-            $this->{$this->rolesIdentifierName},
-            [$role]
-        );
+        if (!in_array($role, $this->{$this->rolesIdentifierName})) {
+            $this->{$this->rolesIdentifierName} = array_merge(
+                $this->{$this->rolesIdentifierName},
+                [$role]
+            );
+        }
     }
 
     public function removeRole(string $role)

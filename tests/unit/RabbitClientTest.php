@@ -26,7 +26,7 @@ class RabbitClientTest extends Unit
     public function test()
     {
         $this->client->send('v1.testing', 'Test Message');
-        $consumer = $this->client->createConsumer('v1.testing');
+        $consumer = $this->client->createConsumer('v1.testing', 'test');
         $this->assertNotEmpty($consumer);
     }
 }

@@ -21,9 +21,9 @@ Route::post('/custom/login', [AuthController::class, 'customLogin'])
     ->name('auth_custom_login')
 ;
 Route::post('/register', [AuthController::class, 'register'])->name('auth_register');
-Route::group(['middleware' => ['auth.jwt', 'role:ROLE_USER']], function () {
+Route::group(['middleware' => ['auth.jwt']], function () {
     Route::put('/token/refresh', [AuthController::class, 'refresh'])->name('auth_refresh');
-    Route::prefix('vat')->group(function () {
+    Route::prefix('vat')->middleware(['role:ROLE_PRODUCT|ROLE_HELPER'])->group(function () {
         Route::post('/check', [VatController::class, 'check'])->name('vat_check');
         Route::get('/', [VatController::class, 'list'])->name('vat_list');
         Route::get('/{id}', [VatController::class, 'get'])->name('vat_get');

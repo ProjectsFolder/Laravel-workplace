@@ -12,6 +12,9 @@ class UserRepository
         $user = new User();
         $validated = $data->validated();
         $user->fill($validated);
+        foreach ($validated['roles'] ?? [] as $role) {
+            $user->addRole($role);
+        }
         $user->save();
 
         return $user;

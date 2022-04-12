@@ -29,6 +29,7 @@ class UserCredentialsRequest extends FormRequest
             'name' => 'max:25|required',
             'email' => 'max:25',
             'password' => 'max:25|required',
+            'roles' => 'array'
         ];
     }
 

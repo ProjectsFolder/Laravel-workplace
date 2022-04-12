@@ -34,7 +34,7 @@ class User extends Model implements JWTSubject, AuthenticatableContract, RolesIn
     protected $fillable = [
         'name',
         'email',
-        'password'
+        'password',
     ];
 
     /**

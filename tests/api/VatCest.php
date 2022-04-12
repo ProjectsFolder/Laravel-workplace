@@ -14,6 +14,7 @@ class VatCest
         $I->sendPost('/register', [
             'name' => 'test',
             'password' => 'secret',
+            'roles' => ['ROLE_ADMIN'],
         ]);
         $response = $I->sendPost('/login', [
             'name' => 'test',
