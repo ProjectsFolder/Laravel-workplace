@@ -5,6 +5,6 @@ modules:
             url: /api
             depends: Laravel
         - Laravel:
-            cleanup: true
+            cleanup: false
             environment_file: .env.testing
         - \Helper\Api

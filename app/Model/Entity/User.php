@@ -7,6 +7,7 @@ use App\Infrastructure\Security\WithRoles;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -18,7 +19,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  */
 class User extends Model implements JWTSubject, AuthenticatableContract, RolesInterface
 {
-    use Notifiable, Authenticatable, WithRoles;
+    use Notifiable, Authenticatable, WithRoles, SoftDeletes;
 
     public function __construct(array $attributes = [])
     {

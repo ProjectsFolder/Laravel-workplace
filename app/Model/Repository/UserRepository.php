@@ -3,6 +3,7 @@
 namespace App\Model\Repository;
 
 use App\Http\Requests\UserCredentialsRequest;
+use App\Model\DatabaseUtils;
 use App\Model\Entity\User;
 
 class UserRepository
@@ -23,7 +24,7 @@ class UserRepository
     public function find(int $Id): ?User
     {
         /** @var User $user */
-        $user = User::query()->find($Id);
+        $user = User::on(DatabaseUtils::DB_REPLICA)->find($Id);
 
         return $user;
     }
@@ -31,7 +32,7 @@ class UserRepository
     public function findByName(string $name): ?User
     {
         /** @var User $user */
-        $user = User::query()->where('name', $name)->first();
+        $user = User::on(DatabaseUtils::DB_REPLICA)->where('name', $name)->first();
 
         return $user;
     }

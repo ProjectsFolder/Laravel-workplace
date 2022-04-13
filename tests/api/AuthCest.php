@@ -1,5 +1,7 @@
 <?php
 
+use App\Model\Entity\User;
+
 class AuthCest
 {
     public function _before(ApiTester $I)
@@ -16,6 +18,14 @@ class AuthCest
             'password' => 'secret',
         ]);
         $I->seeResponseContainsJson(['success' => true]);
+    }
+
+    public function _after(ApiTester $I)
+    {
+        $user = User::withTrashed()->where('name', 'test')->first();
+        $user->forceDelete();
+        $user = User::withTrashed()->where('name', 'test2')->first();
+        $user->forceDelete();
     }
 
     public function registerTest(ApiTester $I)

@@ -5,6 +5,7 @@ namespace App\Model\Repository;
 use App\Domain\Entity\Vat\VatData;
 use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Http\Requests\VatRequest;
+use App\Model\DatabaseUtils;
 use App\Model\Entity\Vat;
 use App\Utils\Mapper\TypeMapper;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -28,13 +29,13 @@ class VatRepository implements VatSaverInterface
 
     public function list(int $perPage = 10): LengthAwarePaginator
     {
-        return Vat::query()->paginate($perPage);
+        return Vat::on(DatabaseUtils::DB_REPLICA)->paginate($perPage);
     }
 
     public function get(int $id): ?Vat
     {
         /** @var Vat $vat */
-        $vat = Vat::query()->find($id);
+        $vat = Vat::on(DatabaseUtils::DB_REPLICA)->find($id);
 
         return $vat;
     }
@@ -42,7 +43,7 @@ class VatRepository implements VatSaverInterface
     public function update(int $id, VatRequest $data): ?Vat
     {
         /** @var Vat $vat */
-        $vat = Vat::query()->find($id);
+        $vat = Vat::on(DatabaseUtils::DB_REPLICA)->find($id);
         if (empty($vat)) {
             return null;
         }
@@ -56,7 +57,7 @@ class VatRepository implements VatSaverInterface
     public function delete(int $id): bool
     {
         /** @var Vat $vat */
-        $vat = Vat::query()->find($id);
+        $vat = Vat::on(DatabaseUtils::DB_REPLICA)->find($id);
         if (empty($vat)) {
             return false;
         }

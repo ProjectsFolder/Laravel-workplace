@@ -2,6 +2,8 @@
 
 use App\Domain\Entity\Vat\VatData;
 use App\Domain\Interfaces\Output\VatGetterInterface;
+use App\Model\Entity\User;
+use App\Model\Entity\Vat;
 use Codeception\Stub;
 use PHPUnit\Framework\MockObject\Stub\ReturnCallback;
 
@@ -47,6 +49,16 @@ class VatCest
         $I->seeResponseContainsJson(['success' => true]);
         $response = json_decode($response, true);
         $this->id = $response['data']['id'];
+    }
+
+    public function _after(ApiTester $I)
+    {
+        $vat = Vat::withTrashed()->find($this->id);
+        if (!empty($vat)) {
+            $vat->forceDelete();
+        }
+        $user = User::withTrashed()->where('name', 'test')->first();
+        $user->forceDelete();
     }
 
     // tests
