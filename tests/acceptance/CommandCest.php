@@ -8,7 +8,6 @@ class CommandCest
     {
     }
 
-    // tests
     public function createDatabaseTest(AcceptanceTester $I)
     {
         $output = new BufferedOutput();
