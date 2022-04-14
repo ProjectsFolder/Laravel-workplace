@@ -5,7 +5,12 @@ namespace App\Providers;
 use App\Domain\Interfaces\Output\VatGetterInterface;
 use App\Domain\Interfaces\Output\VatSaverInterface;
 use App\Domain\VatSaver;
+use App\External\Config\ApiConfig;
+use App\External\Http\HttpClient;
+use App\External\Http\SmsClient;
+use App\External\Interfaces\HttpClientInterface;
 use App\External\Interfaces\RabbitClientInterface;
+use App\External\Interfaces\SmsClientInterface;
 use App\External\Mq\RabbitClient;
 use App\External\Soap\ViesClient;
 use App\Infrastructure\Security\RoleTreeParser;
@@ -68,6 +73,15 @@ class AppServiceProvider extends ServiceProvider
         $this->app->tag($this->mappers, ['type-mapper']);
         $this->app->singleton(TypeMapper::class, function () {
             return new TypeMapper($this->app->tagged('type-mapper'));
+        });
+        $this->app->singleton(HttpClientInterface::class, function () {
+            return new HttpClient();
+        });
+        $this->app->singleton(SmsClientInterface::class, function () {
+            return new SmsClient(
+                (new ApiConfig())->setBaseUrl(env('SMS_URL'))->setApiKey(env('SMS_API_KEY')),
+                resolve(HttpClientInterface::class)
+            );
         });
     }
 

@@ -10,7 +10,7 @@ use SoapClient;
 
 class ViesClient implements VatGetterInterface
 {
-    private $client;
+    protected $client;
 
     public function __construct(string $wsdlUrl)
     {

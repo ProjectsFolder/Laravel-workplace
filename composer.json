@@ -10,19 +10,20 @@
     "require": {
         "php": "^7.2.5|^8.0",
         "ext-json": "*",
+        "ext-pdo": "*",
         "ext-soap": "*",
         "doctrine/annotations": "^1.13",
         "doctrine/dbal": "^3.3",
         "enqueue/amqp-lib": "^0.10.9",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^3.0",
+        "guzzlehttp/guzzle": "^7.4",
         "laravel/framework": "^6.20.26",
         "laravel/tinker": "^2.5",
         "symfony/property-access": "^5.4",
         "symfony/serializer": "^5.4",
         "symfony/yaml": "4.4",
-        "tymon/jwt-auth": "^1.0",
-        "ext-pdo": "*"
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
