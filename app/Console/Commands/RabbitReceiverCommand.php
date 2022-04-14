@@ -4,9 +4,10 @@ namespace App\Console\Commands;
 
 use App\Domain\Interfaces\Input\VatSaverInterface;
 use App\External\Interfaces\RabbitClientInterface;
-use App\Model\Repository\LogRepository;
+use App\Jobs\WriteLog;
 use Enqueue\AmqpLib\AmqpConsumer;
 use Exception;
+use Illuminate\Bus\Dispatcher;
 use Illuminate\Console\Command;
 use Illuminate\Redis\RedisManager;
 
@@ -14,8 +15,8 @@ class RabbitReceiverCommand extends Command
 {
     private $rabbitClient;
     private $vatSaver;
-    private $logRepository;
     private $redis;
+    private $dispatcher;
 
     /**
      * The name and signature of the console command.
@@ -36,20 +37,20 @@ class RabbitReceiverCommand extends Command
      *
      * @param RabbitClientInterface $rabbitClient
      * @param VatSaverInterface $vatSaver
-     * @param LogRepository $logRepository
      * @param RedisManager $redis
+     * @param Dispatcher $dispatcher
      */
     public function __construct(
         RabbitClientInterface $rabbitClient,
         VatSaverInterface $vatSaver,
-        LogRepository $logRepository,
-        RedisManager $redis
+        RedisManager $redis,
+        Dispatcher $dispatcher
     ) {
         parent::__construct();
         $this->rabbitClient = $rabbitClient;
         $this->vatSaver = $vatSaver;
-        $this->logRepository = $logRepository;
         $this->redis = $redis;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -75,7 +76,7 @@ class RabbitReceiverCommand extends Command
                         $data = $message->getBody();
                         if (!empty($data)) {
                             $this->vatSaver->saveVat($data);
-                            $this->logRepository->store($data);
+                            $this->dispatcher->dispatch(new WriteLog($data));
                             $this->info($data);
                         }
                         $consumer->acknowledge($message);
