@@ -6,7 +6,7 @@ use App\Events\UserLogin;
 use App\Model\Repository\LogRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class LoggerNotification implements ShouldQueue
+class LoggerListener implements ShouldQueue
 {
     public $queue = 'login';
 

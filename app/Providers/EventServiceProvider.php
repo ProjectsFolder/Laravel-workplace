@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Events\UserLogin;
-use App\Listeners\LoggerNotification;
+use App\Listeners\LoggerListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -20,7 +20,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         UserLogin::class => [
-            LoggerNotification::class,
+            LoggerListener::class,
         ]
     ];
 
