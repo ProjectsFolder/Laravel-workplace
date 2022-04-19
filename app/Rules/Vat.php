@@ -25,7 +25,7 @@ class Vat implements Rule
      */
     public function message(): string
     {
-        return 'The :attribute filed is not valid vat.';
+        return trans('validation.vat');
     }
 
     public function __toString(): string

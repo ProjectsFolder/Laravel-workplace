@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use App\Domain\Interfaces\Input\VatSaverInterface;
 use App\Http\Requests\VatRequest;
 use App\Model\Repository\VatRepository;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VatController extends Controller
 {
-    private $vatRepository;
+    protected $vatRepository;
+    protected $translator;
 
-    public function __construct(VatRepository $vatRepository)
+    public function __construct(VatRepository $vatRepository, Translator $translator)
     {
         $this->vatRepository = $vatRepository;
+        $this->translator = $translator;
     }
 
     public function check(
@@ -26,7 +29,7 @@ class VatController extends Controller
 
         $id = $vatSaver->saveVat($request->query('vat'));
         if (empty($id)) {
-            throw new HttpException(400, 'Vat is not valid');
+            throw new HttpException(400, $this->translator->get('messages.vat.invalid'));
         }
 
         return response()->success($this->vatRepository->get($id));
@@ -43,7 +46,7 @@ class VatController extends Controller
     {
         $vat = $this->vatRepository->get($id);
         if (empty($vat)) {
-            throw new HttpException(404, 'Not found');
+            throw new HttpException(404, $this->translator->get('messages.not_found'));
         }
 
         return response()->success($vat);
@@ -53,7 +56,7 @@ class VatController extends Controller
     {
         $vat = $this->vatRepository->update($id, $request);
         if (empty($vat)) {
-            throw new HttpException(404, 'Not found');
+            throw new HttpException(404, $this->translator->get('messages.not_found'));
         }
 
         return response()->success($vat);
@@ -63,7 +66,7 @@ class VatController extends Controller
     {
         $deleted = $this->vatRepository->delete($id);
         if (!$deleted) {
-            throw new HttpException(404, 'Not found');
+            throw new HttpException(404, $this->translator->get('messages.not_found'));
         }
 
         return response()->success();

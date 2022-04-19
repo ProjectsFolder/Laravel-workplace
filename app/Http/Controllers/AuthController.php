@@ -7,6 +7,7 @@ use App\Http\Requests\UserCredentialsRequest;
 use App\Model\Entity\User;
 use App\Model\Repository\UserRepository;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,11 +16,19 @@ use Tymon\JWTAuth\JWTAuth;
 
 class AuthController extends Controller
 {
+    /** @var Translator $translator */
+    protected $translator;
+
+    public function __construct(Translator $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function login(Request $request, JWTAuth $auth, Dispatcher $dispatcher): Response
     {
         $input = $request->only(['name', 'password']);
         if (!$token = $auth->attempt($input)) {
-            throw new HttpException(400, 'Login or password is incorrect');
+            throw new HttpException(400, $this->translator->get('messages.auth_error.login'));
         }
         /** @var User $user */
         $user = $auth->user();
@@ -44,7 +53,7 @@ class AuthController extends Controller
             ]);
         }
 
-        throw new HttpException(400, 'Login or password is incorrect');
+        throw new HttpException(400, $this->translator->get('messages.auth_error.login'));
     }
 
     public function register(UserCredentialsRequest $request, UserRepository $userRepository): Response

@@ -26,10 +26,17 @@ class UserCredentialsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'max:25|required',
+            'name' => 'max:25|required|regex:/^[a-zA-Z0-9]+$/u|unique:users,name',
             'email' => 'max:25',
             'password' => 'max:25|required',
             'roles' => 'array'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'password.required' => trans('messages.auth_error.password'),
         ];
     }
 

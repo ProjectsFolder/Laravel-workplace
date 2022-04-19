@@ -83,7 +83,7 @@ class Handler extends ExceptionHandler
      */
     public static function failed(array $errors)
     {
-        $message = "Validation errors:\n";
+        $message = trans('messages.validation_errors').":\n";
         $message .= implode("\n", $errors);
         throw new HttpException(400, $message);
     }
