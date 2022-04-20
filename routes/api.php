@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VatController;
 
@@ -30,4 +31,9 @@ Route::group(['middleware' => ['auth.jwt']], function () {
         Route::put('/{id}', [VatController::class, 'update'])->name('vat_update');
         Route::delete('/{id}', [VatController::class, 'delete'])->name('vat_delete');
     });
+});
+Route::prefix('file')->group(function () {
+    Route::post('/', [FileController::class, 'upload'])->name('file_upload');
+    Route::delete('/', [FileController::class, 'delete'])->name('file_delete');
+    Route::get('/', [FileController::class, 'download'])->name('file_download');
 });

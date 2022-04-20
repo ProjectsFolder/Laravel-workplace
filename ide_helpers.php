@@ -4,11 +4,15 @@
 
 namespace Illuminate\Contracts\Routing {
 
-    use Symfony\Component\HttpFoundation\Response;
+    use Illuminate\Http\Response;
 
     class ResponseFactory
     {
         public function success($data = null, $meta = [], $headers = []): Response
+        {
+        }
+
+        public function attachment($content, $filename, $headers = []): Response
         {
         }
     }

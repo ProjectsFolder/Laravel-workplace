@@ -16,6 +16,8 @@ use App\External\Soap\ViesClient;
 use App\Infrastructure\Security\RoleTreeParser;
 use App\Infrastructure\Serializer\ApiEncoder;
 use App\Infrastructure\Serializer\ApiNormalizer;
+use App\Infrastructure\Storage\FileStorage;
+use App\Infrastructure\Storage\FileStorageInterface;
 use App\Model\Repository\VatRepository;
 use App\Rules\Vat;
 use App\Utils\Mapper\Mappers\VatDataToVatEntity;
@@ -25,9 +27,11 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
 use JsonSerializable;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -83,6 +87,9 @@ class AppServiceProvider extends ServiceProvider
                 resolve(HttpClientInterface::class)
             );
         });
+        $this->app->singleton(FileStorageInterface::class, function () {
+            return new FileStorage(Storage::disk('local'));
+        });
     }
 
     /**
@@ -114,6 +121,22 @@ class AppServiceProvider extends ServiceProvider
             $headers['Content-Type'] = 'application/json';
 
             return new Response($responseData, 200, $headers);
+        });
+
+        $responseFactory->macro('attachment', function ($content, $filename, $headers = []) use ($serializer) {
+            $headers = array_merge($headers, [
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            ]);
+            if (is_resource($content)) {
+                return new StreamedResponse(function () use ($content) {
+                    fpassthru($content);
+                    if (is_resource($content)) {
+                        fclose($content);
+                    }
+                }, 200, $headers);
+            } else {
+                return new Response($content, 200, $headers);
+            }
         });
     }
 

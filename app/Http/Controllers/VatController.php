@@ -7,7 +7,7 @@ use App\Http\Requests\VatRequest;
 use App\Model\Repository\VatRepository;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VatController extends Controller
