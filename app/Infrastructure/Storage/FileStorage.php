@@ -2,21 +2,27 @@
 
 namespace App\Infrastructure\Storage;
 
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Filesystem\Filesystem;
 
 class FileStorage implements FileStorageInterface
 {
     protected $storage;
+    protected $cache;
 
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, Repository $cache)
     {
         $this->storage = $filesystem;
+        $this->cache = $cache;
     }
 
     public function store(string $content, string $name, string $area = ''): string
     {
         $path = $this->getPath($name, $area);
-        $this->storage->put($path, $content);
+        $this->cache->lock(self::class.$area, 60)->block(30, function () use ($path, $content) {
+            $this->storage->put($path, $content);
+            sleep(15);
+        });
 
         return $path;
     }
@@ -37,17 +43,19 @@ class FileStorage implements FileStorageInterface
 
     protected function getPath(string $name, string $area = ''): string
     {
-        $fileId = hash('sha256', $area.$name);
-        $path = [
-            $fileId[0] ?? 'a',
-            $fileId[1] ?? 'a',
-            $fileId[2] ?? 'a',
-            $name,
-        ];
-        if (!empty($area)) {
-            array_unshift($path, $area);
-        }
+        return $this->cache->remember(self::class.$area.$name, 60 * 10, function () use ($area, $name) {
+            $fileId = hash('sha256', $area.$name);
+            $path = [
+                $fileId[0] ?? 'a',
+                $fileId[1] ?? 'a',
+                $fileId[2] ?? 'a',
+                $name,
+            ];
+            if (!empty($area)) {
+                array_unshift($path, $area);
+            }
 
-        return implode(DIRECTORY_SEPARATOR, $path);
+            return implode(DIRECTORY_SEPARATOR, $path);
+        });
     }
 }

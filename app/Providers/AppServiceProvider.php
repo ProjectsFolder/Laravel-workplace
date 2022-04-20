@@ -27,6 +27,7 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Factory;
@@ -88,7 +89,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
         $this->app->singleton(FileStorageInterface::class, function () {
-            return new FileStorage(Storage::disk('local'));
+            return new FileStorage(Storage::disk('local'), Cache::store('redis'));
         });
     }
 
