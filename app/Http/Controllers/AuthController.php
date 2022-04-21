@@ -6,6 +6,7 @@ use App\Events\UserLogin;
 use App\Http\Requests\UserCredentialsRequest;
 use App\Model\Entity\User;
 use App\Model\Repository\UserRepository;
+use App\Notifications\UserRegistered;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Events\Dispatcher;
@@ -56,7 +57,8 @@ class AuthController extends Controller
 
     public function register(UserCredentialsRequest $request, UserRepository $userRepository): Response
     {
-        $userRepository->create($request);
+        $user = $userRepository->create($request);
+        $user->notify(new UserRegistered());
 
         return response()->success();
     }
