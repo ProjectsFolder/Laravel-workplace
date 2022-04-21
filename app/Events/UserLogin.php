@@ -2,17 +2,19 @@
 
 namespace App\Events;
 
+use App\Model\Entity\User;
+
 class UserLogin
 {
-    protected $message;
+    protected $user;
 
-    public function __construct(string $message)
+    public function __construct(User $user)
     {
-        $this->message = $message;
+        $this->user = $user;
     }
 
-    public function getMessage(): string
+    public function getUser(): User
     {
-        return $this->message;
+        return $this->user;
     }
 }

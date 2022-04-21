@@ -24,15 +24,12 @@ class AuthController extends Controller
         $this->translator = $translator;
     }
 
-    public function login(Request $request, JWTAuth $auth, Dispatcher $dispatcher): Response
+    public function login(Request $request, JWTAuth $auth): Response
     {
         $input = $request->only(['name', 'password']);
         if (!$token = $auth->attempt($input)) {
             throw new HttpException(400, $this->translator->get('messages.auth_error.login'));
         }
-        /** @var User $user */
-        $user = $auth->user();
-        $dispatcher->dispatch(new UserLogin("user {$user->name} is login"));
 
         return response()->success([
             'token' => $token,
@@ -40,12 +37,13 @@ class AuthController extends Controller
         ]);
     }
 
-    public function customLogin(Guard $guard, JWTAuth $auth): Response
+    public function customLogin(Guard $guard, JWTAuth $auth, Dispatcher $dispatcher): Response
     {
         if ($guard->validate()) {
             /** @var User $user */
             $user = $guard->user();
             $token = $auth->fromUser($user);
+            $dispatcher->dispatch(new UserLogin($user));
 
             return response()->success([
                 'token' => $token,
