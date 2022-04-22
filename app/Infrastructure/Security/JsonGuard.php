@@ -2,22 +2,28 @@
 
 namespace App\Infrastructure\Security;
 
+use App\Model\Entity\User;
 use App\Utils\StringUtils;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 
 class JsonGuard implements Guard
 {
     protected $provider;
     protected $request;
+    protected $dispatcher;
     protected $user;
+    protected $name = 'json';
 
-    public function __construct(UserProvider $userProvider, Request $request)
+    public function __construct(UserProvider $userProvider, Request $request, Dispatcher $dispatcher)
     {
         $this->provider = $userProvider;
         $this->request = $request;
+        $this->dispatcher = $dispatcher;
     }
 
     public function check(): bool
@@ -54,9 +60,11 @@ class JsonGuard implements Guard
             }
         }
 
+        /** @var User $user */
         $user = $this->provider->retrieveByCredentials($credentials);
         if (!empty($user) && $this->provider->validateCredentials($user, $credentials)) {
             $this->setUser($user);
+            $this->dispatcher->dispatch(new Login($this->name, $user, false));
 
             return true;
         } else {

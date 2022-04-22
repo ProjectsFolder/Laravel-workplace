@@ -2,43 +2,34 @@
 
 namespace App\Listeners;
 
-use App\Events\UserLogin;
-use App\Mail\UserDetails;
+use App\Events\WriteLog;
 use App\Model\Repository\LogRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailer;
 
 class LoggerListener implements ShouldQueue
 {
-    public $queue = 'login';
+    public $queue = 'logger';
 
     protected $logRepository;
-    protected $mailer;
 
     /**
      * Create the event listener.
      *
      * @param LogRepository $logRepository
-     * @param Mailer $mailer
      */
-    public function __construct(LogRepository $logRepository, Mailer $mailer)
+    public function __construct(LogRepository $logRepository)
     {
         $this->logRepository = $logRepository;
-        $this->mailer = $mailer;
     }
 
     /**
      * Handle the event.
      *
-     * @param  UserLogin  $event
+     * @param  WriteLog  $event
      * @return void
      */
-    public function handle(UserLogin $event)
+    public function handle(WriteLog $event)
     {
-        $user = $event->getUser();
-        $this->logRepository->store("user {$user->name} is login");
-        if (!empty($user->email)) {
-            $this->mailer->to($user)->send(new UserDetails($user));
-        }
+        $this->logRepository->store($event->getMessage());
     }
 }

@@ -41,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
             return new DatabaseUserProvider(resolve(UserRepository::class), resolve(Hasher::class));
         });
         $auth->extend('json', function ($app, $name, array $config) use ($auth) {
-            return new JsonGuard($auth->createUserProvider($config['provider']), $app->make('request'));
+            return new JsonGuard($auth->createUserProvider($config['provider']), $app->make('request'), $app->make('events'));
         });
         $gate->define('check-role', 'App\Infrastructure\Security\CheckRolePolicy@check');
     }

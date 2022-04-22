@@ -5,6 +5,7 @@ namespace App\Model\Repository;
 use App\Http\Requests\UserCredentialsRequest;
 use App\Model\DatabaseUtils;
 use App\Model\Entity\User;
+use App\Notifications\UserRegistered;
 
 class UserRepository
 {
@@ -17,6 +18,7 @@ class UserRepository
             $user->addRole($role);
         }
         $user->save();
+        $user->notify(new UserRegistered());
 
         return $user;
     }
