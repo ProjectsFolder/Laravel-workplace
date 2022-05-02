@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Infrastructure\Security\DatabaseUserProvider;
 use App\Infrastructure\Security\JsonGuard;
+use App\Infrastructure\Security\Policies\PostPolicy;
+use App\Model\Entity\Post;
 use App\Model\Repository\UserRepository;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\Access\Gate;
@@ -18,7 +20,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        Post::class => PostPolicy::class,
     ];
 
     /**

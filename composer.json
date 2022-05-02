@@ -13,7 +13,7 @@
         "ext-pdo": "*",
         "ext-soap": "*",
         "doctrine/annotations": "^1.13",
-        "doctrine/dbal": "^3.3",
+        "doctrine/dbal": "2.*",
         "enqueue/amqp-lib": "^0.10.9",
         "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^3.0",

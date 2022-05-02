@@ -37,9 +37,9 @@ class ApiEncoder implements EncoderInterface, DecoderInterface
             if (isset($context['error_code'])) {
                 $result['code'] = $context['error_code'];
             }
-//            if (isset($context['error_traceback'])) {
-//                $result['traceback'] = $context['error_traceback'];
-//            }
+            if (isset($context['error_traceback'])) {
+                $result['traceback'] = $context['error_traceback'];
+            }
             if (isset($context['error_file'])) {
                 $result['file'] = $context['error_file'];
             }

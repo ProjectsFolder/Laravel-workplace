@@ -23,7 +23,7 @@ class FileController extends Controller
     {
         $this->validateData($request->all(), ['file' => 'required']);
         $file = $request->file('file');
-        $path = $this->storage->store($file->get(), $file->getClientOriginalName(), 'uploads');
+        $path = $this->storage->store($file->get(), $file->getClientOriginalName(), $request->get('area', 'uploads'));
 
         return \response()->success(['path' => $path]);
     }
@@ -32,7 +32,7 @@ class FileController extends Controller
     {
         $this->validateData($request->all(), ['file' => 'required']);
         $fileName = $request->get('file');
-        $success = $this->storage->delete($fileName, 'uploads');
+        $success = $this->storage->delete($fileName, $request->get('area', 'uploads'));
         if ($success) {
             return \response()->success();
         }
@@ -44,7 +44,7 @@ class FileController extends Controller
     {
         $this->validateData($request->all(), ['file' => 'required']);
         $fileName = $request->get('file');
-        $resource = $this->storage->get($fileName, 'uploads');
+        $resource = $this->storage->get($fileName, $request->get('area', 'uploads'));
         if ($resource) {
             //return Storage::download($path);
             return \response()->attachment($resource, $fileName);

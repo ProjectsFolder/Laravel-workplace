@@ -43,7 +43,7 @@ class VatRepository implements VatSaverInterface
     public function update(int $id, VatRequest $data): ?Vat
     {
         /** @var Vat $vat */
-        $vat = Vat::on(DatabaseUtils::DB_REPLICA)->find($id);
+        $vat = Vat::query()->find($id);
         if (empty($vat)) {
             return null;
         }
@@ -57,7 +57,7 @@ class VatRepository implements VatSaverInterface
     public function delete(int $id): bool
     {
         /** @var Vat $vat */
-        $vat = Vat::on(DatabaseUtils::DB_REPLICA)->find($id);
+        $vat = Vat::query()->find($id);
         if (empty($vat)) {
             return false;
         }

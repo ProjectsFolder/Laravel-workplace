@@ -34,6 +34,11 @@ class FileStorage implements FileStorageInterface
         return $this->storage->delete($path);
     }
 
+    public function deleteArea(string $area): bool
+    {
+        return $this->storage->deleteDirectory($area);
+    }
+
     public function get(string $name, string $area = '')
     {
         $path = $this->getPath($name, $area);

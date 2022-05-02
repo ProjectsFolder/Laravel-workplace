@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VatController;
 
@@ -30,6 +31,13 @@ Route::group(['middleware' => ['auth.jwt']], function () {
         Route::get('/{id}', [VatController::class, 'get'])->name('vat_get');
         Route::put('/{id}', [VatController::class, 'update'])->name('vat_update');
         Route::delete('/{id}', [VatController::class, 'delete'])->name('vat_delete');
+    });
+    Route::prefix('post')->middleware(['role:ROLE_USER'])->group(function () {
+        Route::get('/', [PostController::class, 'list'])->name('post_list');
+        Route::get('/{id}', [PostController::class, 'get'])->name('post_get');
+        Route::post('/', [PostController::class, 'create'])->name('post_create');
+        Route::put('/{id}', [PostController::class, 'update'])->name('post_update');
+        Route::delete('/{id}', [PostController::class, 'delete'])->name('post_delete');
     });
 });
 Route::prefix('file')->group(function () {
