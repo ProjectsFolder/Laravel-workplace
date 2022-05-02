@@ -24,7 +24,7 @@ class PostPolicy
      * Determine whether the user can view the post.
      *
      * @param  $user
-     * @param  Post  $post
+     * @param  Post $post
      * @return mixed
      */
     public function view($user, Post $post): bool
@@ -47,7 +47,7 @@ class PostPolicy
      * Determine whether the user can update the post.
      *
      * @param  $user
-     * @param  Post  $post
+     * @param  Post $post
      * @return mixed
      */
     public function update($user, Post $post): bool
@@ -59,7 +59,7 @@ class PostPolicy
      * Determine whether the user can delete the post.
      *
      * @param  $user
-     * @param  Post  $post
+     * @param  Post $post
      * @return mixed
      */
     public function delete($user, Post $post): bool
