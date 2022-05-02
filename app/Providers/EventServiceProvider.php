@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Events\WriteLog;
-use App\Listeners\LoggerListener;
-use App\Listeners\LoginSuccessfulListener;
+use App\Infrastructure\Notification\Events\WriteLog;
+use App\Infrastructure\Notification\Listeners\LoggerListener;
+use App\Infrastructure\Notification\Listeners\LoginSuccessfulListener;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;

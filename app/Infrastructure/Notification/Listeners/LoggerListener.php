@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Infrastructure\Notification\Listeners;
 
-use App\Events\WriteLog;
+use App\Infrastructure\Notification\Events\WriteLog;
 use App\Model\Repository\LogRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

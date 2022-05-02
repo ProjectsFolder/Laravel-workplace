@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Infrastructure\Notification\Jobs;
 
 use App\Model\Repository\LogRepository;
 use Illuminate\Bus\Queueable;

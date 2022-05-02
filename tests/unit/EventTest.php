@@ -1,7 +1,7 @@
 <?php
 
-use App\Events\WriteLog;
-use App\Listeners\LoggerListener;
+use App\Infrastructure\Notification\Events\WriteLog;
+use App\Infrastructure\Notification\Listeners\LoggerListener;
 use App\Model\Repository\LogRepository;
 use Codeception\Test\Unit;
 

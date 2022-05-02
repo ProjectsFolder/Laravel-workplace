@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\WriteLog;
+use App\Infrastructure\Notification\Jobs\WriteLog;
 use App\Model\Repository\LogRepository;
 use Codeception\Test\Unit;
 

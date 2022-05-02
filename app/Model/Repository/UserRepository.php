@@ -5,7 +5,7 @@ namespace App\Model\Repository;
 use App\Http\Requests\UserCredentialsRequest;
 use App\Model\DatabaseUtils;
 use App\Model\Entity\User;
-use App\Notifications\UserRegistered;
+use App\Infrastructure\Notification\Notifications\UserRegistered;
 
 class UserRepository
 {

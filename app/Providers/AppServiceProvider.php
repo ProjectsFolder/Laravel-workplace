@@ -19,7 +19,7 @@ use App\Infrastructure\Serializer\ApiNormalizer;
 use App\Infrastructure\Storage\FileStorage;
 use App\Infrastructure\Storage\FileStorageInterface;
 use App\Model\Repository\VatRepository;
-use App\Rules\Vat;
+use App\Infrastructure\Rule\Vat;
 use App\Utils\Mapper\Mappers\VatDataToVatEntity;
 use App\Utils\Mapper\TypeMapper;
 use App\Utils\Paginator;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Infrastructure\Notification\Mail;
 
 use App\Model\Entity\User;
 use Illuminate\Bus\Queueable;

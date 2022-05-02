@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Domain\Interfaces\Input\VatSaverInterface;
 use App\External\Interfaces\RabbitClientInterface;
-use App\Jobs\WriteLog;
+use App\Infrastructure\Notification\Jobs\WriteLog;
 use Enqueue\AmqpLib\AmqpConsumer;
 use Exception;
 use Illuminate\Bus\Dispatcher;

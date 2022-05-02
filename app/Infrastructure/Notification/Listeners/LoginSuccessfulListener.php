@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Infrastructure\Notification\Listeners;
 
-use App\Events\WriteLog;
-use App\Mail\UserDetails;
+use App\Infrastructure\Notification\Events\WriteLog;
+use App\Infrastructure\Notification\Mail\UserDetails;
 use App\Model\Entity\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Events\Dispatcher;

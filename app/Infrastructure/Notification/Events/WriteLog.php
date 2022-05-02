@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Infrastructure\Notification\Events;
 
 class WriteLog
 {
