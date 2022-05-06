@@ -19,10 +19,10 @@ class FileStorage implements FileStorageInterface
     public function store(string $content, string $name, string $area = ''): string
     {
         $path = $this->getPath($name, $area);
-        $this->cache->lock(self::class.$area, 60)->block(30, function () use ($path, $content) {
-            $this->storage->put($path, $content);
-            sleep(15);
-        });
+        //$this->cache->lock(self::class.$area, 60)->block(30, function () use ($path, $content) {
+        $this->storage->put($path, $content);
+        //    sleep(15);
+        //});
 
         return $path;
     }

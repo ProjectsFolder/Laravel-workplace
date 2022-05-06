@@ -40,6 +40,15 @@ $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
 );
+try {
+    (\Dotenv\Dotenv::create(__DIR__.'/../'))->load();
+} catch (Dotenv\Exception\InvalidPathException $ignored) {
+}
+$path = storage_path();
+if (!empty(env('APP_STORAGE_PATH'))) {
+    $path = base_path().'/'.env('APP_STORAGE_PATH');
+}
+$app->useStoragePath($path);
 
 /*
 |--------------------------------------------------------------------------
