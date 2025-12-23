@@ -33,6 +33,7 @@ install:
 	docker-compose up -d
 	sleep 10
 	docker-compose exec app php artisan key:generate
+	docker-compose exec app php artisan jwt:secret --force
 	docker-compose exec app php artisan migrate
 	@echo "Installation complete! App available at http://localhost:8080"
 

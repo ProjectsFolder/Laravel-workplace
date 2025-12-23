@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     default-mysql-client \
+    redis-server \
+    libssl-dev \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath zip soap sockets
 

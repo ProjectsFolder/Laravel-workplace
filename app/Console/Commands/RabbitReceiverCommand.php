@@ -62,7 +62,7 @@ class RabbitReceiverCommand extends Command
     {
         $reconnect = false;
         $this->redis->set('rabbit_receive_enable', true);
-        while (true) {
+        while (!empty($this->redis->get('rabbit_receive_enable', false))) {
             try {
                 if ($reconnect) {
                     $this->rabbitClient->reconnect();
